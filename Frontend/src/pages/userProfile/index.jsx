@@ -1,364 +1,354 @@
-// eslint-disable-next-line no-unused-vars
-import * as React from 'react';
-import AspectRatio from '@mui/joy/AspectRatio';
-import Box from '@mui/joy/Box';
-import Button from '@mui/joy/Button';
-import Divider from '@mui/joy/Divider';
-import FormControl from '@mui/joy/FormControl';
-import FormLabel from '@mui/joy/FormLabel';
-import FormHelperText from '@mui/joy/FormHelperText';
-import Input from '@mui/joy/Input';
-import IconButton from '@mui/joy/IconButton';
-import Textarea from '@mui/joy/Textarea';
-import Stack from '@mui/joy/Stack';
-import Select from '@mui/joy/Select';
-import Option from '@mui/joy/Option';
-import Typography from '@mui/joy/Typography';
-import Tabs from '@mui/joy/Tabs';
-import TabList from '@mui/joy/TabList';
-import { tabClasses } from '@mui/joy/Tab';
-import Breadcrumbs from '@mui/joy/Breadcrumbs';
-import Link from '@mui/joy/Link';
-import Card from '@mui/joy/Card';
-import CardActions from '@mui/joy/CardActions';
-import CardOverflow from '@mui/joy/CardOverflow';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+    Container,
+    Typography,
+    TextField,
+    Button,
+    Avatar,
+    IconButton,
+    Divider,
+    Link,
+    Snackbar,
+    Switch,
+    FormControlLabel,
+    Grid,
+    Paper,
+    Box
+} from '@mui/material';
+import {
+    Edit,
+    Save,
+    Close,
+    Email,
+    Phone,
+    LocationOn,
+    Work,
+    Language,
+    LinkedIn,
+    GitHub,
+    Twitter
+} from '@mui/icons-material';
 
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
-import AccessTimeFilledRoundedIcon from '@mui/icons-material/AccessTimeFilledRounded';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
+// 模拟用户数据
+const userData = {
+    name: "Jane Doe",
+    email: "jane.doe@example.com",
+    phone: "+1 (555) 123-4567",
+    location: "New York, NY",
+    occupation: "Senior Software Engineer",
+    languages: ["English", "Spanish", "French"],
+    bio: "Passionate about creating intuitive and efficient software solutions. Always eager to learn and tackle new challenges in the tech world.",
+    linkedin: "https://linkedin.com/in/janedoe",
+    github: "https://github.com/janedoe",
+    twitter: "https://twitter.com/janedoe"
+};
 
-import DropZone from '@/components/DropZone';
-import EditorToolbar from '@/components/EditorToolbar';
+const UserProfile = () => {
+    const [editing, setEditing] = useState(false);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [user, setUser] = useState(userData);
 
-export default function UserProfile() {
+    const handleEdit = () => {
+        setEditing(true);
+    };
+
+    const handleSave = () => {
+        setEditing(false);
+        setSnackbarOpen(true);
+    };
+
+    const handleClose = () => {
+        setEditing(false);
+    };
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setUser(prevUser => ({
+            ...prevUser,
+            [name]: value
+        }));
+    };
+
     return (
-        <Box sx={{ flex: 1, width: '100%' }}>
-            <Box
-                sx={{
-                    position: 'sticky',
-                    top: { sm: -100, md: -110 },
-                    bgcolor: 'background.body',
-                    zIndex: 9995,
-                }}
-            >
-                <Box sx={{ px: { xs: 2, md: 6 } }}>
-                    <Breadcrumbs
-                        size="sm"
-                        aria-label="breadcrumbs"
-                        separator={<ChevronRightRoundedIcon fontSize="sm" />}
-                        sx={{ pl: 0 }}
-                    >
-                        <Link
-                            underline="none"
-                            color="neutral"
-                            href="/"
-                            aria-label="Home"
-                        >
-                            <HomeRoundedIcon />
-                        </Link>
-                        <Typography color="primary" fontWeight={500} fontSize={12}>
-                            My profile
-                        </Typography>
-                    </Breadcrumbs>
-                    <Typography level="h2" component="h1" sx={{ mt: 1, mb: 2 }}>
-                        My profile
-                    </Typography>
-                </Box>
-                <Tabs
-                    defaultValue={0}
-                    sx={{
-                        bgcolor: 'transparent',
-                    }}
+        <div className="min-h-screen bg-gradient-to-br from-purple-400 to-indigo-600 flex items-center justify-center p-4">
+            <Container maxWidth="lg">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
                 >
-                    <TabList
-                        tabFlex={1}
-                        size="sm"
-                        sx={{
-                            pl: { xs: 0, md: 4 },
-                            justifyContent: 'left',
-                            [`&& .${tabClasses.root}`]: {
-                                fontWeight: '600',
-                                flex: 'initial',
-                                color: 'text.tertiary',
-                                [`&.${tabClasses.selected}`]: {
-                                    bgcolor: 'transparent',
-                                    color: 'text.primary',
-                                    '&::after': {
-                                        height: '2px',
-                                        bgcolor: 'primary.500',
-                                    },
-                                },
-                            },
-                        }}
-                    >
-                    </TabList>
-                </Tabs>
-            </Box>
-            <Stack
-                spacing={4}
-                sx={{
-                    display: 'flex',
-                    maxWidth: '800px',
-                    mx: 'auto',
-                    px: { xs: 2, md: 6 },
-                    py: { xs: 2, md: 3 },
-                }}
-            >
-                <Card>
-                    <Box sx={{ mb: 1 }}>
-                        <Typography level="title-md">Personal info</Typography>
-                        <Typography level="body-sm">
-                            Customize how your profile information will apper to the networks.
-                        </Typography>
-                    </Box>
-                    <Divider />
-                    <Stack
-                        direction="row"
-                        spacing={3}
-                        sx={{ display: { xs: 'none', md: 'flex' }, my: 1 }}
-                    >
-                        <Stack direction="column" spacing={1}>
-                            <AspectRatio
-                                ratio="1"
-                                maxHeight={200}
-                                sx={{ flex: 1, minWidth: 120, borderRadius: '100%' }}
-                            >
-                                <img
-                                    src=""
-                                    srcSet=""
-                                    loading="lazy"
-                                    alt=""
-                                />
-                            </AspectRatio>
-                            <IconButton
-                                aria-label="upload new picture"
-                                size="sm"
-                                variant="outlined"
-                                color="neutral"
-                                sx={{
-                                    bgcolor: 'background.body',
-                                    position: 'absolute',
-                                    zIndex: 2,
-                                    borderRadius: '50%',
-                                    left: 100,
-                                    top: 170,
-                                    boxShadow: 'sm',
-                                }}
-                            >
-                                <EditRoundedIcon />
-                            </IconButton>
-                        </Stack>
-                        <Stack spacing={2} sx={{ flexGrow: 1 }}>
-                            <Stack spacing={1}>
-                                <FormLabel>Name</FormLabel>
-                                <FormControl
-                                    sx={{ display: { sm: 'flex-column', md: 'flex-row' }, gap: 2 }}
+                    <Paper elevation={3} sx={{ p: 4, borderRadius: 2, bgcolor: 'white' }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                            <Typography variant="h4" component="h1" sx={{ color: 'purple.700', fontWeight: 'bold' }}>
+                                User Profile
+                            </Typography>
+                            {!editing ? (
+                                <Button
+                                    onClick={handleEdit}
+                                    variant="contained"
+                                    sx={{
+                                        bgcolor: 'purple.600',
+                                        color: 'white',
+                                        '&:hover': { bgcolor: 'purple.700' },
+                                    }}
+                                    startIcon={<Edit />}
                                 >
-                                    <Input size="sm" placeholder="First name" />
-                                    <Input size="sm" placeholder="Last name" sx={{ flexGrow: 1 }} />
-                                </FormControl>
-                            </Stack>
-                            <Stack direction="row" spacing={2}>
-                                <FormControl>
-                                    <FormLabel>Role</FormLabel>
-                                    <Input size="sm" defaultValue="UI Developer" />
-                                </FormControl>
-                                <FormControl sx={{ flexGrow: 1 }}>
-                                    <FormLabel>Email</FormLabel>
-                                    <Input
-                                        size="sm"
-                                        type="email"
-                                        startDecorator={<EmailRoundedIcon />}
-                                        placeholder="email"
-                                        defaultValue="siriwatk@test.com"
-                                        sx={{ flexGrow: 1 }}
-                                    />
-                                </FormControl>
-                            </Stack>
-                            <div>
-                                <FormControl sx={{ display: { sm: 'contents' } }}>
-                                    <FormLabel>Timezone</FormLabel>
-                                    <Select
-                                        size="sm"
-                                        startDecorator={<AccessTimeFilledRoundedIcon />}
-                                        defaultValue="1"
+                                    Edit Profile
+                                </Button>
+                            ) : (
+                                <Box>
+                                    <Button
+                                        onClick={handleSave}
+                                        variant="contained"
+                                        sx={{
+                                            bgcolor: 'green.500',
+                                            color: 'white',
+                                            mr: 1,
+                                            '&:hover': { bgcolor: 'green.600' },
+                                        }}
+                                        startIcon={<Save />}
                                     >
-                                        <Option value="1">
-                                            Indochina Time (Bangkok){' '}
-                                            <Typography textColor="text.tertiary" ml={0.5}>
-                                                — GMT+07:00
+                                        Save
+                                    </Button>
+                                    <Button
+                                        onClick={handleClose}
+                                        variant="outlined"
+                                        color="error"
+                                        startIcon={<Close />}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </Box>
+                            )}
+                        </Box>
+
+                        <Grid container spacing={4}>
+                            <Grid item xs={12} md={4}>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                        <Avatar
+                                            src="/placeholder-avatar.jpg"
+                                            sx={{ width: 150, height: 150, mb: 2 }}
+                                        />
+                                    </motion.div>
+                                    <Typography variant="h5" sx={{ color: 'purple.700', fontWeight: 'bold' }} gutterBottom>{user.name}</Typography>
+                                    <Typography variant="subtitle1" sx={{ color: 'gray.600' }} gutterBottom>{user.occupation}</Typography>
+                                    <Button
+                                        variant="outlined"
+                                        sx={{
+                                            mt: 2,
+                                            borderColor: 'purple.500',
+                                            color: 'purple.500',
+                                            '&:hover': { borderColor: 'purple.600', bgcolor: 'purple.50' },
+                                        }}
+                                    >
+                                        Change Avatar
+                                    </Button>
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12} md={8}>
+                                <AnimatePresence>
+                                    {editing ? (
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                        >
+                                            <Grid container spacing={2}>
+                                                <Grid item xs={12} sm={6}>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="Name"
+                                                        name="name"
+                                                        value={user.name}
+                                                        onChange={handleInputChange}
+                                                        variant="outlined"
+                                                        sx={{ '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: 'purple.500' } } }}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={12} sm={6}>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="Email"
+                                                        name="email"
+                                                        value={user.email}
+                                                        onChange={handleInputChange}
+                                                        variant="outlined"
+                                                        sx={{ '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: 'purple.500' } } }}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={12} sm={6}>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="Phone"
+                                                        name="phone"
+                                                        value={user.phone}
+                                                        onChange={handleInputChange}
+                                                        variant="outlined"
+                                                        sx={{ '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: 'purple.500' } } }}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={12} sm={6}>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="Location"
+                                                        name="location"
+                                                        value={user.location}
+                                                        onChange={handleInputChange}
+                                                        variant="outlined"
+                                                        sx={{ '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: 'purple.500' } } }}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={12}>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="Occupation"
+                                                        name="occupation"
+                                                        value={user.occupation}
+                                                        onChange={handleInputChange}
+                                                        variant="outlined"
+                                                        sx={{ '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: 'purple.500' } } }}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={12}>
+                                                    <TextField
+                                                        fullWidth
+                                                        multiline
+                                                        rows={4}
+                                                        label="Bio"
+                                                        name="bio"
+                                                        value={user.bio}
+                                                        onChange={handleInputChange}
+                                                        variant="outlined"
+                                                        sx={{ '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: 'purple.500' } } }}
+                                                    />
+                                                </Grid>
+                                            </Grid>
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                        >
+                                            <Typography variant="body1" paragraph sx={{ display: 'flex', alignItems: 'center', color: 'gray.700' }}>
+                                                <Email sx={{ mr: 1, color: 'purple.500' }} />
+                                                {user.email}
                                             </Typography>
-                                        </Option>
-                                        <Option value="2">
-                                            Indochina Time (Ho Chi Minh City){' '}
-                                            <Typography textColor="text.tertiary" ml={0.5}>
-                                                — GMT+07:00
+                                            <Typography variant="body1" paragraph sx={{ display: 'flex', alignItems: 'center', color: 'gray.700' }}>
+                                                <Phone sx={{ mr: 1, color: 'purple.500' }} />
+                                                {user.phone}
                                             </Typography>
-                                        </Option>
-                                    </Select>
-                                </FormControl>
-                            </div>
-                        </Stack>
-                    </Stack>
-                    <Stack
-                        direction="column"
-                        spacing={2}
-                        sx={{ display: { xs: 'flex', md: 'none' }, my: 1 }}
-                    >
-                        <Stack direction="row" spacing={2}>
-                            <Stack direction="column" spacing={1}>
-                                <AspectRatio
-                                    ratio="1"
-                                    maxHeight={108}
-                                    sx={{ flex: 1, minWidth: 108, borderRadius: '100%' }}
-                                >
-                                    <img
-                                        src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286"
-                                        srcSet="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286&dpr=2 2x"
-                                        loading="lazy"
-                                        alt=""
-                                    />
-                                </AspectRatio>
-                                <IconButton
-                                    aria-label="upload new picture"
-                                    size="sm"
-                                    variant="outlined"
-                                    color="neutral"
-                                    sx={{
-                                        bgcolor: 'background.body',
-                                        position: 'absolute',
-                                        zIndex: 2,
-                                        borderRadius: '50%',
-                                        left: 85,
-                                        top: 180,
-                                        boxShadow: 'sm',
-                                    }}
-                                >
-                                    <EditRoundedIcon />
-                                </IconButton>
-                            </Stack>
-                            <Stack spacing={1} sx={{ flexGrow: 1 }}>
-                                <FormLabel>Name</FormLabel>
-                                <FormControl
-                                    sx={{
-                                        display: {
-                                            sm: 'flex-column',
-                                            md: 'flex-row',
-                                        },
-                                        gap: 2,
-                                    }}
-                                >
-                                    <Input size="sm" placeholder="First name" />
-                                    <Input size="sm" placeholder="Last name" />
-                                </FormControl>
-                            </Stack>
-                        </Stack>
-                        <FormControl>
-                            <FormLabel>Role</FormLabel>
-                            <Input size="sm" defaultValue="UI Developer" />
-                        </FormControl>
-                        <FormControl sx={{ flexGrow: 1 }}>
-                            <FormLabel>Email</FormLabel>
-                            <Input
-                                size="sm"
-                                type="email"
-                                startDecorator={<EmailRoundedIcon />}
-                                placeholder="email"
-                                defaultValue="siriwatk@test.com"
-                                sx={{ flexGrow: 1 }}
+                                            <Typography variant="body1" paragraph sx={{ display: 'flex', alignItems: 'center', color: 'gray.700' }}>
+                                                <LocationOn sx={{ mr: 1, color: 'purple.500' }} />
+                                                {user.location}
+                                            </Typography>
+                                            <Typography variant="body1" paragraph sx={{ display: 'flex', alignItems: 'center', color: 'gray.700' }}>
+                                                <Work sx={{ mr: 1, color: 'purple.500' }} />
+                                                {user.occupation}
+                                            </Typography>
+                                            <Typography variant="body1" paragraph sx={{ display: 'flex', alignItems: 'center', color: 'gray.700' }}>
+                                                <Language sx={{ mr: 1, color: 'purple.500' }} />
+                                                {user.languages.join(', ')}
+                                            </Typography>
+                                            <Typography variant="body1" paragraph sx={{ color: 'gray.700' }}>
+                                                {user.bio}
+                                            </Typography>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </Grid>
+                        </Grid>
+
+                        <Divider sx={{ my: 3 }} />
+
+                        <Box sx={{ mt: 3 }}>
+                            <Typography variant="h6" sx={{ color: 'purple.700', fontWeight: 'bold' }} gutterBottom>Social Links</Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={4}>
+                                    <Link href={user.linkedin} target="_blank" rel="noopener noreferrer"
+                                          sx={{ display: 'flex', alignItems: 'center', color: 'purple.600', textDecoration: 'none', '&:hover': { color: 'purple.700' } }}>
+                                        <LinkedIn sx={{ mr: 1 }} />
+                                        LinkedIn
+                                    </Link>
+                                </Grid>
+                                <Grid item xs={12} sm={4}>
+                                    <Link href={user.github} target="_blank" rel="noopener noreferrer"
+                                          sx={{ display: 'flex', alignItems: 'center', color: 'purple.600', textDecoration: 'none', '&:hover': { color: 'purple.700' } }}>
+                                        <GitHub sx={{ mr: 1 }} />
+                                        GitHub
+                                    </Link>
+                                </Grid>
+                                <Grid item xs={12} sm={4}>
+                                    <Link href={user.twitter} target="_blank" rel="noopener noreferrer"
+                                          sx={{ display: 'flex', alignItems: 'center', color: 'purple.600', textDecoration: 'none', '&:hover': { color: 'purple.700' } }}>
+                                        <Twitter sx={{ mr: 1 }} />
+                                        Twitter
+                                    </Link>
+                                </Grid>
+                            </Grid>
+                        </Box>
+
+                        <Divider sx={{ my: 3 }} />
+
+                        <Box sx={{ mt: 3 }}>
+                            <Typography variant="h6" sx={{ color: 'purple.700', fontWeight: 'bold' }} gutterBottom>Account Settings</Typography>
+                            <FormControlLabel
+                                control={<Switch color="primary" sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: 'purple.600' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: 'purple.600' } }} />}
+                                label="Enable Two-Factor Authentication"
                             />
-                        </FormControl>
-                        <div>
-                            <FormControl sx={{ display: { sm: 'contents' } }}>
-                                <FormLabel>Timezone</FormLabel>
-                                <Select
-                                    size="sm"
-                                    startDecorator={<AccessTimeFilledRoundedIcon />}
-                                    defaultValue="1"
+                            <Box sx={{ mt: 2 }}>
+                                <Button
+                                    variant="outlined"
+                                    sx={{
+                                        mr: 2,
+                                        borderColor: 'purple.500',
+                                        color: 'purple.500',
+                                        '&:hover': { borderColor: 'purple.600', bgcolor: 'purple.50' },
+                                    }}
                                 >
-                                    <Option value="1">
-                                        Indochina Time (Bangkok){' '}
-                                        <Typography textColor="text.tertiary" ml={0.5}>
-                                            — GMT+07:00
-                                        </Typography>
-                                    </Option>
-                                    <Option value="2">
-                                        Indochina Time (Ho Chi Minh City){' '}
-                                        <Typography textColor="text.tertiary" ml={0.5}>
-                                            — GMT+07:00
-                                        </Typography>
-                                    </Option>
-                                </Select>
-                            </FormControl>
-                        </div>
-                    </Stack>
-                    <CardOverflow sx={{ borderTop: '1px solid', borderColor: 'divider' }}>
-                        <CardActions sx={{ alignSelf: 'flex-end', pt: 2 }}>
-                            <Button size="sm" variant="outlined" color="neutral">
-                                Cancel
-                            </Button>
-                            <Button size="sm" variant="solid">
-                                Save
-                            </Button>
-                        </CardActions>
-                    </CardOverflow>
-                </Card>
-                <Card>
-                    <Box sx={{ mb: 1 }}>
-                        <Typography level="title-md">Bio</Typography>
-                        <Typography level="body-sm">
-                            Write a short introduction to be displayed on your profile
-                        </Typography>
-                    </Box>
-                    <Divider />
-                    <Stack spacing={2} sx={{ my: 1 }}>
-                        <EditorToolbar />
-                        <Textarea
-                            size="sm"
-                            minRows={4}
-                            sx={{ mt: 1.5 }}
-                            defaultValue="I'm a software developer based in Bangkok, Thailand. My goal is to solve UI problems with neat CSS without using too much JavaScript."
-                        />
-                        <FormHelperText sx={{ mt: 0.75, fontSize: 'xs' }}>
-                            275 characters left
-                        </FormHelperText>
-                    </Stack>
-                    <CardOverflow sx={{ borderTop: '1px solid', borderColor: 'divider' }}>
-                        <CardActions sx={{ alignSelf: 'flex-end', pt: 2 }}>
-                            <Button size="sm" variant="outlined" color="neutral">
-                                Cancel
-                            </Button>
-                            <Button size="sm" variant="solid">
-                                Save
-                            </Button>
-                        </CardActions>
-                    </CardOverflow>
-                </Card>
-                <Card>
-                    <Box sx={{ mb: 1 }}>
-                        <Typography level="title-md">Portfolio projects</Typography>
-                        <Typography level="body-sm">
-                            Share a few snippets of your work.
-                        </Typography>
-                    </Box>
-                    <Divider />
-                    <Stack spacing={2} sx={{ my: 1 }}>
-                        <DropZone />
-                    </Stack>
-                    <CardOverflow sx={{ borderTop: '1px solid', borderColor: 'divider' }}>
-                        <CardActions sx={{ alignSelf: 'flex-end', pt: 2 }}>
-                            <Button size="sm" variant="outlined" color="neutral">
-                                Cancel
-                            </Button>
-                            <Button size="sm" variant="solid">
-                                Save
-                            </Button>
-                        </CardActions>
-                    </CardOverflow>
-                </Card>
-            </Stack>
-        </Box>
+                                    Change Password
+                                </Button>
+                                <Button
+                                    variant="text"
+                                    component={Link}
+                                    href="/contact"
+                                    sx={{ color: 'purple.600', '&:hover': { color: 'purple.700' } }}
+                                >
+                                    Forgot Password?
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Paper>
+                </motion.div>
+
+                <Snackbar
+                    open={snackbarOpen}
+                    autoHideDuration={6000}
+                    onClose={handleSnackbarClose}
+                    message="Profile updated successfully"
+                    action={
+                        <IconButton
+                            size="small"
+                            aria-label="close"
+                            color="inherit"
+                            onClick={handleSnackbarClose}
+                        >
+                            <Close fontSize="small" />
+                        </IconButton>
+                    }
+                />
+            </Container>
+        </div>
     );
-}
+};
+
+export default UserProfile;

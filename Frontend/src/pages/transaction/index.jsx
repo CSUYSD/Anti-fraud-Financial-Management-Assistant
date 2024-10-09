@@ -13,7 +13,7 @@ import {
     getAllRecordsAPI, getRecordsByTypeAPI, createRecordAPI, updateRecordAPI, deleteRecordAPI, deleteRecordsInBatchAPI
 } from '@/api/record.jsx'
 
-const MotionCard = motion(Card)
+const MotionCard = motion.create(Card)
 
 export default function Transaction() {
     const theme = useTheme()

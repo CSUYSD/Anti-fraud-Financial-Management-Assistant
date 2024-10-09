@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import MuiAppBar from '@mui/material/AppBar';
 import MuiDrawer from '@mui/material/Drawer';
@@ -17,13 +17,12 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tooltip } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tooltip, Zoom, Fade, Grow } from '@mui/material';
 import { Link as MuiLink } from '@mui/material';
 import { Link as RouterLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { mainListItems, secondaryListItems } from './ListItems';
-
-// Import the logoutAPI function (assuming it's defined in a separate file)
-import { logoutAPI } from '@/api/user.jsx'; // Adjust the import path as needed
+import { motion, AnimatePresence } from 'framer-motion';
+import { logoutAPI } from '@/api/user.jsx';
 
 const drawerWidth = 240;
 
@@ -71,6 +70,35 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 );
 
+const StyledBadge = styled(Badge)(({ theme }) => ({
+    '& .MuiBadge-badge': {
+        backgroundColor: '#44b700',
+        color: '#44b700',
+        boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+        '&::after': {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            borderRadius: '50%',
+            animation: 'ripple 1.2s infinite ease-in-out',
+            border: '1px solid currentColor',
+            content: '""',
+        },
+    },
+    '@keyframes ripple': {
+        '0%': {
+            transform: 'scale(.8)',
+            opacity: 1,
+        },
+        '100%': {
+            transform: 'scale(2.4)',
+            opacity: 0,
+        },
+    },
+}));
+
 function Copyright(props) {
     return (
         <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -101,6 +129,9 @@ export default function Layout() {
                             primary: {
                                 main: '#3a7bd5',
                             },
+                            secondary: {
+                                main: '#00bcd4',
+                            },
                             background: {
                                 default: '#f5f7fa',
                                 paper: '#ffffff',
@@ -109,6 +140,9 @@ export default function Layout() {
                         : {
                             primary: {
                                 main: '#90caf9',
+                            },
+                            secondary: {
+                                main: '#80deea',
                             },
                             background: {
                                 default: '#121212',
@@ -121,6 +155,7 @@ export default function Layout() {
                         styleOverrides: {
                             root: {
                                 borderRadius: 8,
+                                textTransform: 'none',
                             },
                         },
                     },
@@ -166,11 +201,10 @@ export default function Layout() {
     const handleLogoutConfirm = async () => {
         setLogoutDialogOpen(false);
         try {
-            await logoutAPI(); // Call the logout API
-            navigate('/login'); // Navigate to the login page after successful logout
+            await logoutAPI();
+            navigate('/login');
         } catch (error) {
             console.error('Logout failed:', error);
-            // Handle logout error (e.g., show an error message to the user)
         }
     };
 
@@ -186,16 +220,34 @@ export default function Layout() {
         navigate('/userprofile');
     };
 
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 600) {
+                setOpen(false);
+            } else {
+                setOpen(true);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     return (
         <ThemeProvider theme={theme}>
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
-                <AppBar position="absolute" open={open}>
-                    <Toolbar
-                        sx={{
-                            pr: '24px',
-                        }}
-                    >
+                <AppBar
+                    position="absolute"
+                    open={open}
+                    elevation={0}
+                    sx={{
+                        backdropFilter: 'blur(20px)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                    }}
+                >
+                    <Toolbar sx={{ pr: '24px' }}>
                         <IconButton
                             edge="start"
                             color="inherit"
@@ -213,21 +265,31 @@ export default function Layout() {
                             variant="h6"
                             color="inherit"
                             noWrap
-                            sx={{ flexGrow: 1 }}
+                            sx={{ flexGrow: 1, color: theme.palette.text.primary }}
                         >
                             {getPageTitle(location.pathname)}
                         </Typography>
-                        <IconButton color="inherit" onClick={toggleColorMode}>
-                            {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-                        </IconButton>
-                        <IconButton color="inherit" onClick={handleAccountClick} aria-label="account settings">
-                            <SettingsIcon />
-                        </IconButton>
-                        <IconButton color="inherit" onClick={handleUserProfileClick} aria-label="user profile">
-                            <Badge color="secondary">
-                                <AccountCircleIcon />
-                            </Badge>
-                        </IconButton>
+                        <Zoom in={true} style={{ transitionDelay: '500ms' }}>
+                            <IconButton onClick={toggleColorMode}>
+                                {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+                            </IconButton>
+                        </Zoom>
+                        <Zoom in={true} style={{ transitionDelay: '600ms' }}>
+                            <IconButton onClick={handleAccountClick} aria-label="account settings">
+                                <SettingsIcon />
+                            </IconButton>
+                        </Zoom>
+                        <Zoom in={true} style={{ transitionDelay: '700ms' }}>
+                            <IconButton onClick={handleUserProfileClick} aria-label="user profile">
+                                <StyledBadge
+                                    overlap="circular"
+                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                    variant="dot"
+                                >
+                                    <AccountCircleIcon />
+                                </StyledBadge>
+                            </IconButton>
+                        </Zoom>
                     </Toolbar>
                 </AppBar>
                 <Drawer variant="permanent" open={open}>
@@ -239,20 +301,42 @@ export default function Layout() {
                             px: [1],
                         }}
                     >
-                        {open && (
+                        <Fade in={open} timeout={1000}>
                             <Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}>
                                 <img src="/public/logo.png" alt="Logo" style={{ height: '40px' }} />
                             </Box>
-                        )}
+                        </Fade>
                         <IconButton onClick={toggleDrawer}>
                             <ChevronLeftIcon />
                         </IconButton>
                     </Toolbar>
                     <Divider />
                     <List component="nav">
-                        {mainListItems}
+                        <AnimatePresence>
+                            {open && (
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    {mainListItems}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                         <Divider sx={{ my: 1 }} />
-                        {secondaryListItems}
+                        <AnimatePresence>
+                            {open && (
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    transition={{ duration: 0.3, delay: 0.1 }}
+                                >
+                                    {secondaryListItems}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </List>
                     <Box sx={{ mt: 'auto', p: 2 }}>
                         <Tooltip title="Logout" placement="right">
@@ -268,17 +352,25 @@ export default function Layout() {
                                 }}
                             >
                                 <LogoutIcon />
-                                {open && (
-                                    <Typography
-                                        variant="body2"
-                                        sx={{
-                                            ml: 1,
-                                            display: { xs: 'none', sm: 'block' },
-                                        }}
-                                    >
-                                        Logout
-                                    </Typography>
-                                )}
+                                <AnimatePresence>
+                                    {open && (
+                                        <motion.div
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: -20 }}
+                                        >
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    ml: 1,
+                                                    display: { xs: 'none', sm: 'block' },
+                                                }}
+                                            >
+                                                Logout
+                                            </Typography>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </IconButton>
                         </Tooltip>
                     </Box>
@@ -296,7 +388,11 @@ export default function Layout() {
                     }}
                 >
                     <Toolbar />
-                    <Outlet />
+                    <Grow in={true} style={{ transformOrigin: '0 0 0' }} timeout={1000}>
+                        <Box sx={{ p: 3 }}>
+                            <Outlet />
+                        </Box>
+                    </Grow>
                     <Copyright sx={{ pt: 4, pb: 4 }} />
                 </Box>
             </Box>
@@ -305,10 +401,11 @@ export default function Layout() {
                 onClose={handleLogoutCancel}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
+                TransitionComponent={Zoom}
             >
                 <DialogTitle id="alert-dialog-title">{"Confirm Logout"}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
+                    <DialogContentText  id="alert-dialog-description">
                         Are you sure you want to log out?
                     </DialogContentText>
                 </DialogContent>
