@@ -1,6 +1,7 @@
 # Fin_care
 Fin_care is a web application that allows users to manage their financial data and insights by multiple AI driven functionalities.
-# 中文README
+
+# README in other languages:
 [README_zh.md](README_zh.md)
 
 ## Tech Stack
